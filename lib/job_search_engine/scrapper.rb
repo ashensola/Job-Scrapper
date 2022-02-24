@@ -1,5 +1,9 @@
+require "awesome_print"
 class Scrapper
     @ageDescription;
+    #test
+    #@testArr=[]
+    #
     attr_accessor :name,:location, :page, :age
     def initialize(job,location,page,age)
         @job=job;
@@ -46,6 +50,7 @@ class Scrapper
             jobCount=parsed_page.css('[id=searchCountPages]').text.strip
            
             listing = parsed_page.css('div.slider_item')
+           # puts listing.css("h2.jobtitle")
             #puts listing
             if listing.length!=0 #if length is 0 that means there are no Jobs available
                 button=parsed_page.css('div.pagination')
@@ -57,16 +62,20 @@ class Scrapper
                 else
                 puts "Searching for #{@job} in #{@location} from #{@ageDescription}"
                 puts jobCount
-                listing.each do |list,index|
-                jobArray << index
-                jobArray << list.css("span").attribute("title")
-                jobArray << list.css("span.companyName").text
-                jobArray << list.css("div.companyLocation").text
-                jobArray << list.css("div.salary-snippet").text
+                listing.each do |list|
+                job={
+                #job << index
+                    Title: list.css("h2.jobTitle").text,
+                    Company_Name: list.css("span.companyName").text,
+                    Company_Location: list.css("div.companyLocation").text,
+                    Salary: list.css("div.salary-snippet").text
+                }
+                jobArray<<job
                 end
-                puts jobArray
-                return true;0
+                ap jobArray #prints job array
+                #puts jobArray[0][:Salary]
 
+                return true;0
             end
 
             else
