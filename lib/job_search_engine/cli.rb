@@ -59,10 +59,8 @@ end
 
 def searchJob(inputPage = @inputPage)
    
-newSearch=Scrapper.new(@inputJob,@inputLocation,@inputPage,@inputAge);
+   newSearch=Scrapper.new(@inputJob,@inputLocation,@inputPage,@inputAge);
    @returnBool= newSearch.getJobData?
-
-    
 
 end
 
