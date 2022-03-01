@@ -1,16 +1,16 @@
 require "awesome_print"
 class Scrapper
     @ageDescription;
-    #test
-    #@testArr=[]
-    #
+    @@jobArray=[]
+    @@title
+    @titleVal
     attr_accessor :name,:location, :page, :age
     def initialize(job,location,page,age)
         @job=job;
         @location=location;
-        @page=page  #page number
-        @age=age #24 hours/ 3 day/ 7 day/ 14 day
-
+        @page=page;  #page number
+        @age=age; #24 hours/ 3 day/ 7 day/ 14 day
+        @@jobArray.clear
     end
 
     def verifyAge
@@ -42,7 +42,7 @@ class Scrapper
     def getJobData?
         self.verifyAge
         self.verifyPage
-        jobArray=[]
+        
         if @age!=nil #check if the date posted has correct input
             url = "https://au.indeed.com/jobs?q=#{@job}&l=#{@location}&start=#{@page}&fromage=#{@age}"
             unparsed_page = HTTParty.get(url)
@@ -60,6 +60,8 @@ class Scrapper
                     puts "There are no more entries"
                     return true;0
                 else
+                system("clear") || system("cls")
+
                 puts "Searching for #{@job} in #{@location} from #{@ageDescription}"
                 puts jobCount
                 listing.each do |list|
@@ -70,26 +72,37 @@ class Scrapper
                     Company_Location: list.css("div.companyLocation").text,
                     Salary: list.css("div.salary-snippet").text
                 }
-                jobArray<<job
+                @@jobArray<<job
                 end
-                ap jobArray #prints job array
-                #puts jobArray[0][:Salary]
-
+                ap @@jobArray #prints job array
+                #clears buffer 
                 return true;0
             end
-
+            
             else
                 puts "No Jobs Found for #{@job} in #{@location}"
                 #byebug
                 return false;0
                 end
          else
-         puts "Please enter a valid number #{@age} is not valid!"
+         puts "Input invalid: Press 1 for jobs from 24 hours, 3 for 3 days, 7 for 7 days and 14 for 14 days !"
          return false;0
          end
-    end
 
-    end 
+    end
+    def addtoDatabase(index)
+        titleVal=@@jobArray[index][:Title]  #object deconstruction
+        companynameVal=@@jobArray[index][:Company_Name]
+        companylocationVal=@@jobArray[index][:Company_Location]
+        salaryVal=@@jobArray[index][:Salary]
+        @@jobArray.clear
+       newdatabaseInstance=MyDatabase.new(titleVal,companynameVal,companylocationVal,salaryVal)
+       newdatabaseInstance.create_table
+       newdatabaseInstance.save
+      puts "Success"
+ 
+    end
+end 
 
     #newJob=Scrapper.new("IT","Sydney",1)
     #newJob.getJobData
